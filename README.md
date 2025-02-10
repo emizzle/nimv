@@ -11,7 +11,18 @@ Must be in your PATH:
 
 ## Installation
 
-Add the `nimv` script to PATH.
+### On macOS/Linux
+
+```shell
+brew tap emizzle/nimv
+brew install nimv
+```
+
+### On Windows
+
+```shell
+choco install nimv
+```
 
 ## Usage
 
@@ -32,6 +43,12 @@ Examples:
   /Users/egonat/repos/codex-storage/nim-codex/nimv v2.0.14     Install Nim version 2.0.14
   /Users/egonat/repos/codex-storage/nim-codex/nimv installed   List installed versions
 ```
+
+## Under the hood
+
+`nimv` clones and checkouts the nim version specified in the version-tag
+parameter. It then builds said version *for the current platform target*. Then
+it uses choosenim to do any symlinking needed for other tools in the ecosystem.
 
 ## Credits
 

@@ -19,12 +19,12 @@ if "%~1"=="current" goto current
 if "%~1"=="version" goto version
 
 :: Check if it's a version tag
-echo %~1 | findstr /r "^v[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$" >nul
+echo %~1 | findstr /r /c:"^v[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$" >nul
 if %ERRORLEVEL%==0 (
     set "VERSION_TAG=%~1"
     goto install_version
 )
-echo %~1 | findstr /r "^v[0-9][0-9]*\.[0-9][0-9]*$" >nul
+echo %~1 | findstr /r /c:"^v[0-9][0-9]*\.[0-9][0-9]*$" >nul
 if %ERRORLEVEL%==0 (
     set "VERSION_TAG=%~1"
     goto install_version
