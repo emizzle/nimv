@@ -21,8 +21,8 @@ show_help() {
     echo "  version-tag    The Nim version to install (e.g., v2.0.14, v2.2.0)"
     echo ""
     echo "Examples:"
-    echo "  $0 v2.0.14     Install Nim version 2.0.14"
-    echo "  $0 installed   List installed versions"
+    echo "  nimv v2.0.14     Install Nim version 2.0.14"
+    echo "  nimv installed   List installed versions"
     cd "$INITIAL_DIR"
 }
 
