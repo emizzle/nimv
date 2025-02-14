@@ -3,6 +3,10 @@
 `nimv` is a simple nim version manager, that ensures versions of nim are built
 for the target platform especially with MacOS on ARM (Apple silicon).
 
+> Unsure if your Nim is running emulated with Rossetta under ARM MacOS?
+>
+> Run `file $(which nim)` and if it includes "Mach-O 64-bit executable x86_64" then yes - you are running emulated.
+
 ## Requirements
 
 Must be in your PATH:
