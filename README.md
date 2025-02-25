@@ -28,21 +28,22 @@ choco install nimv
 ## Usage
 
 ```shell
-Usage: nimv <command|version-tag>
+Usage: ./nimv.sh <command|version-tag>
 
 Commands:
   installed      List all installed Nim versions
   available      List all available Nim versions
   current        Show current Nim version
-  --version      Show nimv version
+  check          Verify correct installation and versions
+  --version      Show script version
   --help         Show this help message
 
 Parameters:
-  version-tag    The Nim version to install (e.g., v2.0.14, v2.2.0)
+  version-tag    The Nim version to install (e.g., 2.0.14, 2.2.0)
 
 Examples:
-  /Users/egonat/repos/codex-storage/nim-codex/nimv v2.0.14     Install Nim version 2.0.14
-  /Users/egonat/repos/codex-storage/nim-codex/nimv installed   List installed versions
+  ./nimv.sh 2.0.14      Install Nim version 2.0.14
+  ./nimv.sh installed   List installed versions
 ```
 
 
@@ -61,6 +62,19 @@ If you're running a native binary, you'll see:
 ```shell
 /Users/foo/.nimble/bin/nim: Mach-O 64-bit executable arm64
 ```
+
+This can also be done with the `check` command in `nimv`:
+```shell
+nimv check
+✓ Checking nim binary platform matches current platform
+  /usr/local/bin/nim: Mach-O 64-bit executable arm64
+✓ Checking nim binary version matches nim version selected with nimv
+  Version matches: 2.0.14
+✓ Checking if nimv has available updates
+  Currently up-to-date: 0.0.4
+```
+The first two lines of the output indicate which binary nim has been compiled
+for and that it matches the platform of the current machine.
 
 ## Under the hood
 
