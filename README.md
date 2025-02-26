@@ -12,7 +12,14 @@ Must be in your PATH:
 
 ## Installation
 
-### On macOS/Linux
+### On Linux
+```shell
+add-apt-repository ppa:egonatura/nimv
+apt-get update
+apt-get install nimv
+```
+
+### On macOS
 
 ```shell
 brew tap emizzle/nimv
