@@ -384,7 +384,8 @@ if [ -d "$NIM_BIN_PATH" ]; then
 
     echo "Cleaning up installation directory..."
     cd "$NIM_DIR" || exit 1
-    find . -mindepth 1 -maxdepth 1 ! -name 'bin' -exec rm -rf {} +
+    find . -mindepth 1 -maxdepth 1 ! -name 'bin' ! -name 'lib' ! -name 'dist' ! -name 'config' ! -name 'compiler' -exec rm -rf {} +
+    find dist -mindepth 1 -maxdepth 1 ! -name 'checksums' -exec rm -rf {} +
     rm -f "$NIM_BIN_PATH"/nim_csources*
 
     echo "Done."
