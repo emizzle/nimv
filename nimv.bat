@@ -396,7 +396,9 @@ if exist "%NIM_BIN_PATH%\nim.exe" (
 
     echo Cleaning up installation directory...
     cd /d "%NIM_DIR%"
-    for /d %%i in (*) do if not "%%i"=="bin" rd /s /q "%%i"
+    set "exclude=|bin|lib|dist|config|compiler|"
+    for /d %%i in (*) do if "!exclude:|%%~i|=!" equ "%exclude%" rd /s /q "%%~i"
+    for /d %%i in (dist\*) do if not "%%i"=="dist\checksums" rd /s /q "%%i"
     for %%i in (*) do del /q "%%i"
 
     :: Remove nim_csources binary from bin
