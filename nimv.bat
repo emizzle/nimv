@@ -2,7 +2,7 @@
 setlocal EnableDelayedExpansion
 
 :: Script version and immediate command handling
-set "VERSION=0.0.4"
+set "VERSION=0.0.8"
 if "%~1"=="--version" (
     echo %VERSION%
     exit /b 0
@@ -14,7 +14,7 @@ set "USER_HOME=%USERPROFILE%"
 
 :: Set up colors and symbols based on environment
 set "GREEN=[92m"
-set "RED=[91"
+set "RED=[91m"
 set "YELLOW=[93m"
 set "CYAN=[96m"
 set "NC=[0m"
@@ -105,47 +105,6 @@ if not exist "%nimble_dir%" mkdir "%nimble_dir%"
 for %%b in (nim.exe nim-gdb.exe nimble.exe nimgrep.exe nimpretty.exe nimsuggest.exe testament.exe atlas.exe) do (
     if exist "%nimble_dir%\%%b" del "%nimble_dir%\%%b"
     if exist "%bin_dir%\%%b" mklink "%nimble_dir%\%%b" "%bin_dir%\%%b"
-)
-
-:: Check if .nimble/bin is in PATH
-set "NIMBLE_BIN_PATH=%USER_HOME%\.nimble\bin"
-
-:: Detect environment
-set "IS_MSYS2="
-if defined MSYSTEM set "IS_MSYS2=1"
-
-:: Convert Windows path to Unix-style for MSYS2 if needed
-if defined IS_MSYS2 (
-    set "NIMBLE_BIN_PATH=%USER_HOME:\=/%/.nimble/bin"
-)
-
-:: Check PATH
-if defined IS_MSYS2 (
-    echo ";%PATH%;" | grep -q "%NIMBLE_BIN_PATH%"
-    if !ERRORLEVEL! neq 0 (
-        set "PATH=%NIMBLE_BIN_PATH%:!PATH!"
-        echo.
-        echo Note: %NIMBLE_BIN_PATH% has been added to PATH for this session
-        echo To add it permanently in MSYS2:
-        echo   1. Edit your shell configuration file ^(e.g., ~/.bashrc or ~/.bash_profile^)
-        echo   2. Add the line: export PATH=\"%NIMBLE_BIN_PATH%:\$PATH\"
-        echo   3. Restart your terminal or run: source ~/.bashrc
-    )
-) else (
-    echo ";%PATH%;" | findstr /I /C:"%NIMBLE_BIN_PATH%" >nul
-    if errorlevel 1 (
-        set "PATH=%NIMBLE_BIN_PATH%;%PATH%"
-        echo.
-        echo Note: %NIMBLE_BIN_PATH% has been added to PATH for this session
-        echo To add it permanently in Windows Command Prompt:
-        echo   1. Open System Properties ^(Windows + Pause/Break^)
-        echo   2. Click "Advanced system settings"
-        echo   3. Click "Environment Variables"
-        echo   4. Under "User variables for %USERNAME%", find "Path"
-        echo   5. Click "Edit" and add: %NIMBLE_BIN_PATH%
-        echo   6. Click OK on all windows
-        echo   7. Restart any open terminals
-    )
 )
 exit /b 0
 
@@ -275,8 +234,13 @@ exit /b 0
 set "has_error=false"
 
 :: Check nim binary
+for /f "tokens=*" %%v in ('bash -c "nimv current 2>/dev/null"') do set "current_version=%%v"
 for /f "tokens=*" %%i in ('bash -c "which nim 2>/dev/null"') do set "nim_path=%%i"
-if "%nim_path%"=="" (
+if "%current_version%"=="No version currently selected" (
+    call :show_status "Checking nim binary platform matches current platform" "failure"
+    echo   Error: No nim version currently selected
+    set "has_error=true"
+) else if "%nim_path%"=="" (
     call :show_status "Checking nim binary platform matches current platform" "failure"
     echo   Error: nim not found in PATH
     set "has_error=true"
@@ -287,9 +251,12 @@ if "%nim_path%"=="" (
 
 :: Check nim version matches
 for /f "tokens=*" %%v in ('bash -c "nim --version 2>/dev/null | head -n1 | sed 's/Nim Compiler Version \([0-9.]*\).*/\1/'"') do set "nim_version=%%v"
-for /f "tokens=*" %%v in ('bash -c "nimv current 2>/dev/null"') do set "current_version=%%v"
 
-if "%nim_version%"=="" (
+if "%current_version%"=="No version currently selected" (
+    call :show_status "Checking nim binary version matches nim version selected with nimv" "failure"
+    echo   Error: No nim version currently selected
+    set "has_error=true"
+) else if "%nim_version%"=="" (
     call :show_status "Checking nim binary version matches nim version selected with nimv" "failure"
     echo   Error: Could not determine Nim version
     set "has_error=true"

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script version
-VERSION=0.0.4
+VERSION=0.0.8
 
 # Store the starting directory
 INITIAL_DIR="$(pwd)"
@@ -165,22 +165,25 @@ create_symlinks() {
 
     # Check if .nimble/bin is in PATH
     if [[ ":$PATH:" != *":$HOME/.nimble/bin:"* ]]; then
-        export PATH="$HOME/.nimble/bin:$PATH"
         echo ""
-        echo "Note: $HOME/.nimble/bin has been added to PATH for this session"
-        echo "To add it permanently, add this line to your shell's config file:"
+        echo "=============== ⛔️ SETUP INCOMPLETE: PATH REQUIRES MODIFICATION ⛔️ =================="
+        echo "| $HOME/.nimble/bin MUST be added to PATH                                           |"
+        echo "|                                                                                   |"
+        echo "| To add it permanently, update PATH in your shell's config file:                   |"
         case "$SHELL" in
             *bash)
-                echo "  echo 'export PATH=\$HOME/.nimble/bin:\$PATH' >> ~/.bashrc"
+                echo -e "|   ${CYAN}echo 'export PATH=\$HOME/.nimble/bin:\$PATH' >> ~/.bashrc${NC}                         |"
                 ;;
             *zsh)
-                echo "  echo 'export PATH=\$HOME/.nimble/bin:\$PATH' >> ~/.zshrc"
+                echo -e "|   ${CYAN}echo 'export PATH=\$HOME/.nimble/bin:\$PATH' >> ~/.zshrc${NC}                          |"
                 ;;
             *)
-                echo "  Add 'export PATH=\$HOME/.nimble/bin:\$PATH' to your shell's config file"
+                echo -e "|   ${CYAN}Add 'export PATH=\$HOME/.nimble/bin:\$PATH' to your shell's config file${NC}           |"
                 ;;
         esac
-        echo "Then restart your terminal or run: source ~/.bashrc (or your shell's equivalent)"
+        echo "|                                                                                   |"
+        echo -e "| Then restart your terminal or run: ${CYAN}source ~/.bashrc${NC} (or your shell's equivalent)  |"
+        echo "====================================================================================="
     fi
 }
 
@@ -188,9 +191,14 @@ check_installation() {
     local has_error=false
 
     # Check 1: Binary architecture and path
+    local current_version=$(show_current_version)
     local current_platform=$(get_platform)
     local file_output
-    if ! file_output=$(file "$(which nim 2>/dev/null)" 2>/dev/null); then
+    if [ -z "$current_version" ] || [ "$current_version" = "No version currently selected" ]; then
+        show_status "Checking nim binary platform matches current platform" "failure"
+        echo "  Error: No nim version currently selected"
+        has_error=true
+    elif ! file_output=$(file -L "$(which nim 2>/dev/null)" 2>/dev/null); then
         show_status "Checking nim binary platform matches current platform" "failure"
         echo "  Error: nim not found in PATH"
         has_error=true
@@ -245,8 +253,6 @@ check_installation() {
     fi
 
     # Check 2: Version match
-    local current_version
-    current_version=$(show_current_version)
     if [ -z "$current_version" ] || [ "$current_version" = "No version currently selected" ]; then
         show_status "Checking nim binary version matches nim version selected with nimv" "failure"
         echo "  Error: No nim version currently selected"
